@@ -1,0 +1,111 @@
+% Author Name: José Areia 
+% Author Contact: jose.apareia@gmail.com
+% Version: 1.0.3 - 18/04/2025
+% Public Repository: https://github.com/joseareia/nob-article
+
+% Packages & Document Configurations
+\documentclass[twocolumn]{NobArticle}
+\usepackage{fontspec}
+
+\setmainfont{Nimbus Roman}
+\setmonofont[Scale=MatchLowercase]{Roboto Mono}
+
+\runninghead{A Study of Salaries in AI, ML and Data Science Globally}
+\footertext{\textit{Data Analysis and Visualization} (505067) --- Final Report}
+
+% Title
+\title{
+    \begin{minipage}{\dimexpr\textwidth-4cm\relax}
+        A Study of Salaries in Artificial Intelligence, Machine Learning and Data Science Globally
+    \end{minipage}%
+    \begin{minipage}{4cm}
+        \raggedleft
+        \includegraphics[width=3cm]{Graphics/TDTULogo.png}
+    \end{minipage}
+}
+
+% Authors
+\author{
+    Instructor: Tran Thi Thanh Diu\textsuperscript{1} \\
+    Student 1: Nguyen Minh Triet (523H0107)\textsuperscript{1} \\
+    Student 2: Nguyen Phuc Toan (523H0185)\textsuperscript{1}
+}
+
+% Affiliations
+\date{
+    \textsuperscript{\textbf{1}}
+    Ton Duc Thang University, Department of Computer Science
+}
+
+% Abstract
+\renewcommand{\maketitlehookd}{%
+\begin{abstract}
+    \noindent In the rapidly growing fields of Artificial Intelligence (AI), Machine Learning (ML), and Data Science, understanding salary trends and recruitment patterns is increasingly important. This report analyzes the \href{https://www.kaggle.com/datasets/aijobs/global-salaries-in-ai-ml-data-science}{\textit{Global Salaries in AI, ML, Data Science}} dataset, containing 57,194 records across 11 variables, to provide a comprehensive overview of compensation patterns. The study covers exploratory data analysis, handling of missing and duplicate entries, outlier detection and treatment, and examination of the probability distribution of salaries. Based on these analyses, the report presents key insights into global salary structures within these domains.
+
+    \medskip
+
+    \small{\textbf{Index Terms:} Exploratory Data Analysis, Outlier Detection, Probability Distribution, Hypothesis Testing, Correlation, Multiple Linear Regression.}
+\end{abstract}
+}
+
+\begin{document}
+
+\small
+\maketitle
+
+\section{Overview}
+
+This study investigates global salary trends for AI, ML, and Data Science roles, focusing on the factors that influence compensation and enabling predictive modeling. Specifically, we aim to:
+
+\begin{enumerate}[label=\alph*)]
+    \item Examine salary patterns across countries and job positions.
+    \item Understand how experience, company size, location, remote work, and employee background relate to salary.
+    \item Analyze the impact of recent trends in remote work on compensation.
+\end{enumerate}
+
+Our analysis is guided by the following questions:
+
+\begin{enumerate}
+    \item How does an employee’s experience level (Entry, Mid, Senior, Executive) affect salary?
+    \item Has the rise of remote work, especially post-COVID-19, significantly influenced salaries?
+    \item What other factors most strongly drive salary differences?
+\end{enumerate}
+
+By conducting this study, we seek to:
+
+\begin{enumerate}
+    \item Provide clear answers to these questions.
+    \item Reveal the relationships between key factors and salary.
+    \item Develop a multiple linear regression model to predict salary based on experience, company size, remote work, and other relevant parameters.
+\end{enumerate}
+
+\input{Sections/01-EDA}
+\input{Sections/02-Probability-Distribution-Analysis}
+\input{Sections/03-Hypothesis-Testing}
+\input{Sections/04-Correlation-Analysis}
+\input{Sections/05-Multiple-Linear-Regression}
+\input{Sections/06-Summary}
+
+\section*{Acknowledgements}
+This research received support during the Data Analysis and Visualization (505067) course, instructed by Professor Tran Thi Thanh Diu, PhD at the University of Ton Duc Thang, Department of Computer Science.
+
+\section*{Contributions}
+
+\begin{table}[!htpb]
+    \caption{Contributions of team members to this study.}
+    \label{tab:contributions}
+    \centering
+    \begin{tabularx}{\linewidth}{lX}
+        \toprule
+        \textbf{Team Member} & \textbf{Contributions} \\
+        \midrule
+        Nguyen Minh Triet & Exploratory Data Analysis, Visualization, Outlier Detection and Removal, Probability Distribution Analysis, Presentation Writing \\
+        Nguyen Phuc Toan & Hypothesis Testing, Correlation Analysis, Modeling Multiple Linear Regression, Report Writing \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% \nocite{*}
+% \printbibliography
+
+\end{document}

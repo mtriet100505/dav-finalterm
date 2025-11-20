@@ -1,0 +1,288 @@
+\section{Exploratory Data Analysis}
+
+\subsection{Data Summary}
+
+\subsubsection{Number of Records and Variables}
+
+For this study, we chose the dataset \href{https://www.kaggle.com/datasets/aijobs/global-salaries-in-ai-ml-data-science}{\textit{"Global Salaries in AI, ML, Data Science"}}, which is collected from reputable international recruitment sources and published on \href{https://www.kaggle.com}{Kaggle}.
+
+The dataset contains 57,194 records. Each record includes detailed information on job title, salary, country, experience level, contract type, and other relevant factors.
+
+As such, the sample size is sufficient enough to ensure representativeness and statistical reliability for advanced analysis such as probability distribution assessment, statistical testing, outlier removal, and regression modeling.
+
+The dataset comprises 11 variables (columns), as described in Table~\ref{tab:dataset-variables}.
+
+\begin{table*}[!htpb]
+    \caption{Overview of dataset variables, their types, meanings, and roles in the analysis.}
+    \label{tab:dataset-variables}
+    \centering
+    \begin{tabularx}{\textwidth}{rlXX}
+        \toprule
+        \textbf{Variable} & \textbf{Data Type} & \textbf{Meaning} & \textbf{Purpose in Analysis} \\
+        \midrule
+        \texttt{work\_year} & \texttt{int} & Year in which the salary was reported (2020–2024) & Track salary changes over time and evaluate temporal trends \\
+        \texttt{experience\_level} & \texttt{enum[4]} & Employee seniority: Entry, Mid, Senior, Executive & Quantify salary differences across experience groups \\
+        \texttt{employment\_type} & \texttt{enum[4]} & Employment arrangement: Full-time, Part-time, Contract, Freelance & Explore whether alternative contract types differ from full-time roles in salary \\
+        \texttt{job\_title} & \texttt{string} & Reported job position (e.g., Data Scientist, ML Engineer) & Compare salaries across roles and characterize experience-level patterns \\
+        \texttt{salary} & \texttt{float} & Salary in original currency & Used for historical reference before conversion \\
+        \texttt{salary\_currency} & \texttt{string} & Currency of the reported salary (USD, EUR, GBP, etc.) & Enables proper conversion to USD for cross-country comparability \\
+        \texttt{salary\_in\_usd} & \texttt{float} & Salary converted to USD using annual average exchange rates & Key variable for descriptive stats, distribution analysis, outlier removal, and regression \\
+        \texttt{employee\_residence} & \texttt{string} & Country where the employee resides & Assess regional salary variations and geographic patterns \\
+        \texttt{remote\_ratio} & \texttt{enum[3]} & Degree of remote work: 0\% (on-site), 50\% (hybrid), 100\% (remote) & Measure the influence of remote work intensity on salary \\
+        \texttt{company\_location} & \texttt{string} & Country where the employer is based & Compare salaries by company geography and economic region \\
+        \texttt{company\_size} & \texttt{enum[3]} & Size category: Small (<50), Medium (50--250), Large (>250) & Analyze how organizational scale relates to compensation \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}
+
+\subsubsection{Data Types}
+\label{subsubsec:data-types}
+
+The variables in the dataset fall into two major groups: numerical and categorical.
+
+\textit{Numerical variables} represent quantitative measurements that support descriptive statistics such as mean, median, and standard deviation. They can be either continuous---values measured on a scale, or discrete---countable values without fractional components. In this dataset, the numerical variables are:
+
+\begin{enumerate}
+    \item \texttt{work\_year}: the year in which the salary was reported, used to analyze temporal salary trends.
+    \item \texttt{salary}: the original reported salary, expressed in the currency specified by \texttt{salary\_currency}.
+    \item \texttt{salary\_in\_usd}: the salary converted to USD; this is the primary variable for statistical analysis, distribution assessment, and modeling.
+\end{enumerate}
+
+\textit{Categorical variables}, in contrast, represent groups, labels, or classifications without inherent numerical meaning. They can be divided into two subtypes:
+
+\begin{enumerate}
+    \item Nominal: categories without an intrinsic order.
+    \item Ordinal: categories with a meaningful, ranked order.
+\end{enumerate}
+
+The categorical variables in this dataset include:
+
+\begin{enumerate}
+    \item \texttt{experience\_level} (Ordinal): employee seniority (Entry, Mid, Senior, Executive).
+    \item \texttt{employment\_type} (Nominal): contract type (Full-time, Part-time, Contract, Freelance).
+    \item \texttt{job\_title} (Nominal): job position (e.g., Data Scientist, ML Engineer).
+    \item \texttt{employee\_residence} (Nominal): country where the employee resides.
+    \item \texttt{remote\_ratio} (Ordinal): degree of remote work (0\%, 50\%, 100\%); treated as ordinal since the categories represent increasing levels of remote work.
+    \item \texttt{company\_location} (Nominal): country where the company is based.
+    \item \texttt{company\_size} (Ordinal): organization size (Small, Medium, Large).
+    \item \texttt{salary\_currency} (Nominal): currency used in the original salary report.
+\end{enumerate}
+
+Understanding this distinction is essential during preprocessing—for example, encoding ordinal variables to preserve their rank, or handling nominal categories appropriately when analyzing relationships and fitting regression models.
+
+\subsubsection{Initial Observations}
+
+We display the first five records from the dataset to get a sense of the overall patterns that we work with:
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/InitialObservations.png}
+    \caption{First five records of the dataset the showing variable values.}
+    \label{fig:initial-observations}
+\end{figure}
+
+From Figure~\ref{fig:initial-observations}, several preliminary characteristics can be observed:
+
+\begin{enumerate}
+    \item All entries' job titles contain “Developer”, suggesting that while the dataset contains many technical roles, the first records show only one particular title.
+    \item Experience levels include Entry and Mid, demonstrating a diverse distribution of employee seniority.
+    \item All entries list full-time as the employment type, which is typical in the technology sector.
+    \item All of the salary records are reported in USD without conversion, meaning the original currency matches the converted currency in these records.
+    \item The remote ratio is 0 for all entries, indicating fully on-site work arrangements.
+    \item Employee residence and company location are both “US”, showing that the first records represent the United States labor market.
+    \item The company size is consistently medium-sized (M, 50–250 employees), reflecting a workplace environment typical of mid-scale companies.
+\end{enumerate}
+
+\subsubsection{Handling Missing Data}
+
+A check for missing values reveals that there are no missing values (NA) in any variable, so no further preprocessing is required. As shown in Figure~\ref{fig:missing-values}, the output of \texttt{df.isna().sum()} confirms the absence of missing data.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/MissingValues.png}
+    \caption{Summary of missing values in the dataset (all variables have zero missing entries).}
+    \label{fig:missing-values}
+\end{figure}
+
+\subsubsection{Handling Duplicate Data}
+
+To determine the number of duplicate entries, we use \texttt{df.duplicated().sum()}. The result revealed a significant number of duplicate records in the original dataset. After applying \texttt{df.drop\_duplicates()}, the number of records was substantially reduced (57,194 $\rightarrow$ 29,883), likely due to aggregation from multiple sources or web scraping processes, as shown in Figure~\ref{fig:duplicates}.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/Duplicates.png}
+    \caption{Duplicate data handling: detecting duplicates using \texttt{df.duplicated().sum()}, then removing with \texttt{df.drop\_duplicates()}, and finally the new dataset shape after cleaning.}
+    \label{fig:duplicates}
+\end{figure}
+
+Removing duplicates ensures that: 1) descriptive statistics for salaries are not artificially inflated or biased; 2) probability distribution analysis are performed on truly independent observations; 3) outlier detection is not affected by repeated entries; 4) analytical or predictive models are not biased by replicated data.
+
+\subsection{Descriptive Statistics}
+
+After cleaning the dataset and removing duplicate entries, 27,311 records remain. Next, descriptive statistical analysis was performed for the numerical variables: work year, salary (original and in USD), and remote ratio.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figures/DescriptiveStatistics.png}
+    \caption{Descriptive statistics for numerical variables using \texttt{df.describe()}.}
+    \label{fig:descriptive-statistics}
+\end{figure}
+
+In Figure~\ref{fig:descriptive-statistics}, it can be observed that the numerical variables exhibit uneven, asymmetric distributions, particularly salary (USD), where the difference between mean ($\approx$ 150,000 USD) and max salary (800,000 USD), which means that the mean is closer to the left side, pointing to a plausible right-skewed distribution. The remote ratio indicates that on-site work remains dominant, while fully remote positions account for roughly 25\% of the dataset. The work year is heavily concentrated in 2024, reflecting the recency and reliability of the information.
+
+With this, we have a solid general insight to begin the study.
+
+\subsection{Data Visualization}
+
+\subsubsection{Salary Histogram and KDE Plot}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/HistKDE.png}
+    \caption{Combined histogram and KDE plot of salary (USD), illustrating the right-skewed distribution and presence of high-value outliers.}
+    \label{fig:salary-hist-kde}
+\end{figure}
+
+The histogram + KDE plot provides a clear representation of the salary distribution. In Figure~\ref{fig:salary-hist-kde}, it is heavily right-skewed, with most of its values falling between 100,000--200,000 USD. This matches the median ($\approx$ 150,000 USD), which represents the typical salary in the dataset.
+
+A long right tail appears for sparse but very large salaries (300,000--400,000 and up to 800,000 USD). These high values pull the mean upward ($\approx$ 160,000 USD) and push it to the left, creating a clear gap between mean and median and confirming that the distribution is far from normal. Because of this skewness, methods such as Z-score which rely on normality assumption are unreliable; and MAD or log-transformation are better suited for this.
+
+The KDE curve reinforces the same pattern: a tall peak around 100,000--200,000 USD and a slow-decaying tail on the right. This shape highlights the small group of extremely high earners, mainly high-experienced employees, and the influence of outliers on summary statistics.
+
+Overall, the distribution’s heavy right skew suggests that we need to use more robust techniques when analyzing or modeling this dataset.
+
+\subsubsection{Salary Boxplot}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Boxplot.png}
+    \caption{Boxplot of salary (USD) illustrating the interquartile range and high-value outliers.}
+    \label{fig:salary-boxplot}
+\end{figure}
+
+The salary boxplot (Figure~\ref{fig:salary-boxplot}) highlights the spread of salaries and makes outliers easy to spot. The box represents the interquartile range (IQR), which spans from the first quarter (Q1, 25\% $\approx$ 100,000 USD) to the third quarter (Q3, 75\% < 200,000 USD). The whiskers (the lines outside the box) stretch from roughly 15,000 USD up to >300,000 USD, covering the typical salary range.
+
+Beyond the upper whisker, a cluster of high-value points appears, representing salaries from >300.000 to 800,000 USD. These extreme values match the strong right skew seen in Figure~\ref{fig:salary-hist-kde}, and are potentially the outliers that we need to handle using more robust methods.
+
+Overall, the boxplot shows both the typical central range of salaries and the substantial presence of large outliers.
+
+\subsubsection{Experience Level Countplot}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Countplot.png}
+    \caption{Countplot of employees by experience level, grouped by the top 10 job titles.}
+    \label{fig:experience-countplot}
+\end{figure}
+
+Figure~\ref{fig:experience-countplot} shows how experience levels (Entry, Mid, Senior, Executive) distribute across the top job titles. Executive dominates overall with >6,000 records max in the busiest titles, while Senior usually follows with <3,000 max.
+
+Surprisingly, Entry actually exceeds Mid in several roles; most notably for Data Analyst, where it even surpasses Senior. This reflects the rise of internships and university-backed training pipelines, making companies more open to early-career hires. Still, across all roles, higher experience levels remain the most in-demand.
+
+Overall, this analysis shows that the dataset primarily focuses on professionals and high-level executives, rather than newcomers or interns.
+
+\subsubsection{Remote Ratio Boxplot}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Figures/RemoteRatioBox.png}
+    \caption{Salary distribution across remote-work categories (On-site, Hybrid, and Fully Remote) based on the remote-ratio variable.}
+    \label{fig:remote-ratio-boxplot}
+\end{figure}
+
+Finally, the remote ratio boxplot (Figure~\ref{fig:remote-ratio-boxplot}) shows a pretty distinct pattern across the three remote-work setups. On-site and fully-remote roles both have noticeably higher salaries, with medians sitting well above the hybrid group. Hybrid salaries drop sharply, forming a much shorter box and whiskers.
+
+On-site and fully remote also share a similar spread: wide IQRs, long upper whiskers, and numerous high-salary outliers (up to 800,000 USD). Hybrid, meanwhile, has fewer extreme values and a lower overall range.
+
+We conclude that hybrid roles consistently pay less, while on-site and fully remote offer more comparable and higher compensation, creating a unique V-shape.
+
+\subsection{Outlier Detection and Removal}
+
+\subsubsection{Theoretical Basis}
+
+There are four methods we tested for this study: IQR, Z-score, MAD, and Isolation Forest.
+
+\textbf{(1) Interquartile Range (IQR)}---IQR identifies outliers by assuming that the majority of data points lie within the box as we saw with Figure~\ref{fig:salary-boxplot}, which is from Q1 to Q3:
+
+$$\text{Lower fence} = \text{Q1} - 1.5 \times \text{IQR}, \quad \text{Upper fence} = \text{Q3} + 1.5 \times \text{IQR}$$
+
+Data points outside this range are considered outliers.
+
+However, IQR works best for approximately symmetric distributions, which in our dataset is not reflected due to the heavy right skew of salary.
+
+Applying this method removed 6,646 records. However, with that right skew, it likely removed some legitimate high salaries (Senior or Executive experiences), making it too aggressive for this dataset.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/IQR.png}
+    \caption{Before-and-after sample size after removing outliers using the IQR method.}
+    \label{fig:iqr}
+\end{figure}
+
+\textbf{(2) Z-score}---Assuming that the data is approximately normally distributed, Z-score is calculated by dividing the difference between the data point $x$ (the single value of a variable) and the mean $\mu$ by the standard deviation $\sigma$:
+
+$$Z = \frac{x - \mu}\sigma$$
+
+By the empirical rule, roughly 99.7\% of normally distributed data falls within $\pm3\sigma$ of the mean, meaning values with $|Z| > 3$ are considered outliers.
+
+Using this method, 523 records were identified as outliers, showing that Z-score is less aggressive than IQR. However, due to the normality assumption, the strong right-skew of salary reduces the reliability of Z-score significantly.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Z-score.png}
+    \caption{Before-and-after sample size after removing outliers using the Z-score method.}
+    \label{fig:z-score}
+\end{figure}
+
+\textbf{(3) Median Absolute Deviation (MAD)}---MAD (also known as the Modified Z-score method) is a robust outlier detection technique. Unlike the standard Z-score, which relies on the mean and standard deviation and is therefore highly sensitive to extreme values, MAD uses the median and median absolute deviation, making it far more stable under skewed or heavy-tailed data.
+
+Experimentally, this method removed 522 records, striking a good balance between eliminating true outliers and preserving legitimately high salaries (Senior or Executive roles). For this dataset, MAD proved to be the most appropriate method.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/MAD.png}
+    \caption{Before-and-after sample size after removing outliers using the MAD method.}
+    \label{fig:mad}
+\end{figure}
+
+\textbf{(4) Isolation Forest}---Isolation Forest is an anomaly-detection method that works by randomly splitting the data into branches (trees). Outliers are easier to isolate, meaning they require fewer splits, while normal points need more. This makes the algorithm effective for high-dimensional datasets.
+
+Despite its strengths, the method is less interpretable in a statistical context, and its results depend heavily on the \texttt{contamination} parameter, which is the assumed proportion of outliers. Here, we set contamination to 0.02 (2\%), which led the model to remove 1,079 records. This suggests that the method likely flagged additional false positives compared to simpler statistical techniques.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/IsolationForest.png}
+    \caption{Before-and-after sample size after removing outliers using the Isolation Forest method.}
+    \label{fig:isolation-forest}
+\end{figure}
+
+\subsubsection{Experiment Results}
+
+Lastly, we composed all of the values from our tests into Table~\ref{tab:outlier-comparison} and plotted the boxplots to compare with the original (Figure~\ref{fig:outlier-boxplot}).
+
+\begin{table}[!htpb]
+    \caption{Comparison of outlier detection methods, showing the number of records removed by each technique.}
+    \label{tab:outlier-comparison}
+    \centering
+    \begin{tabularx}{\linewidth}{XX}
+        \toprule
+        \textbf{Method} & \textbf{No. of Records Removed} \\
+        \midrule
+        IQR & 6,646 \\
+        Z-score & 523 \\
+        MAD & 522 \\
+        Isolation Forest & 1,079 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/OutlierBoxplot.png}
+    \caption{Boxplots showing the effect of different outlier removal methods on salary distribution.}
+    \label{fig:outlier-boxplot}
+\end{figure}
+
+\subsubsection{Conclusion}
+
+MAD is the preferred choice for outlier detection and removal because it handles skewed data effectively while preserves the natural distribution of salary, removes outliers without being too aggressive, and provides the most stable and interpretable results among the four methods.

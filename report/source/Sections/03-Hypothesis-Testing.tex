@@ -1,0 +1,74 @@
+\section{Hypothesis Testing}
+
+In this task, we will perform \textbf{hypothesis testing} by proposing a question relevant to the dataset and performing statistical evaluation to answer it.
+
+To begin, we will formulate a question that aims to explore the relationship between remote work and salary, especially as working from home has become increasingly relevant after the COVID-19 pandemic:
+
+\begin{quote}
+    \textit{"Does working fully remotely correlate to a higher salary than on-site or hybrid work?"}
+\end{quote}
+
+Then, we choose a method to perform the test. There are three methods: t-test, Chi-square and ANOVA. After a quick survey, we will test our hypothesis using ANOVA, the reason for which will be explained in Section~\ref{subsec:anova}.
+
+\subsection{Theoretical Basis of ANOVA}
+\label{subsec:anova}
+
+\textit{Analysis of Variance (ANOVA)} is a statistical method used to compare the means of three or more independent groups to determine whether at least one group differs significantly from others. ANOVA effectively reduces the risk of Type I error (rejecting the null hypothesis $H_0$ when it is actually true) while allowing the comparison of three or more categories (\textit{e.g.} groups) per variable, compared to a t-test.
+
+We test our hypothesis using ANOVA by performing an \textbf{F-test}:
+
+$$
+F^* = \frac{\text{MSR}}{\text{MSE}} = \frac{\text{variance between groups}}{\text{variance within groups}}
+$$
+
+We notice that $F^* \propto \frac{1}{\text{MSE}}$, meaning a higher F-statistic value indicates a greater likelihood that the group means are not equal.
+
+Then we calculate \textbf{p-value} using the cumulative distribution function (CDF) of the F-distribution, and finally reject $H_0$ if $p < \alpha$ (where $\alpha = 1 - \text{CI}$, commonly 0.05).
+
+ANOVA works on three assumptions about the dataset: 1) observations in each group are independent; 2) the data within each group is approximately normally distributed; 3) The variances across groups are roughly equal.
+
+We chose this method for this task because:
+
+\begin{enumerate}
+    \item We are testing the remote ratio variable, which is a categorical feature with three groups (on-site, hybrid, and fully remote), so t-test is unsuitable.
+    \item Our goal is to determine the effect of working remotely on salary, which involves comparing the group means, whereas the Chi-square test is used for independence testing.
+    \item Our dataset has a sufficient sample size ($n > 31$) for the distribution to be approximately normal.
+\end{enumerate}
+
+\subsection{Experiment Results}
+
+We begin forming our null and alternate hypotheses:
+
+\begin{enumerate}
+    \item $H_0$: The mean salary is the same across all remote ratios.
+    \item $H_1$: There is at least one remote ratio that has a significantly different mean salary.
+\end{enumerate}
+
+The hypothesis is supported if we reject $H_0$, \textit{i.e.} $p < \alpha$. We set $\alpha = 0.05$ (95\% confidence interval).
+
+We perform a one-way ANOVA test using Python's \texttt{scipy.stats.f\_oneway()} function, which conveniently returns the F-statistic and p-value for the comparison:
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/ANOVA.png}
+    \caption{F-statistic and p-value results from performing one-way ANOVA test using \texttt{scipy.stats.f\_oneway()}.}
+    \label{fig:anova}
+\end{figure}
+
+With $p \approx 1.22 \times 10^{-86} \ll \alpha$, we reject $H_0$, meaning that, with 95\% confidence, there is a significant difference between the salary means of the different remote ratio groups.
+
+\subsection{Observations \& Conclusion}
+
+The significant difference is further illustrated in Figure~\ref{fig:remote-ratio-boxplot}, where hybrid working (50\% on-site, 50\% remote) has a noticeably lower IQR and median, resulting in a much shorter and lower box. However, the answer to our proposed question is not entirely straightforward, as working fully remotely has roughly the same median salary as working on-site. Furthermore, as noted, the work year was recorded from 2020--2024, which introduced a bias toward hybrid or fully remote work in recent years.
+
+From a practical standpoint, this trend makes sense because:
+
+\begin{enumerate}
+    \item The demand for efficient remote work has increased in recent years, especially during the COVID-19 pandemic when employees were restricted from going outside due to quarantine measures.
+    \item Many employees prefer working from home because it offers great flexibility and comfort, which is particularly common in software development, data analysis, and other technology or science-related jobs. 
+    \item Improvements in infrastructure and technology have made remote work not only feasible but also as effective and efficient as working directly in an office.
+\end{enumerate}
+
+However, this does not imply that remote work will fully replace offices, as face-to-face interaction and social activities still hold an important role in boosting employee confidence and supporting their work.
+
+\textbf{Conclusion:} While we cannot provide a definitive answer to our proposed question, our analysis confirms a significant difference in salary across remote ratio groups and highlights the growing importance and prevalence of fully remote work for many employees.

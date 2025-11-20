@@ -1,0 +1,94 @@
+\section{Correlation Analysis}
+
+In this task, we will analyze the correlations between multiple variables/features in our dataset. There are two correlation coefficients we can utilize: Pearson and Spearman, but we will focus only on Spearman, which will be discussed later in Section~\ref{subsec:spearman}.
+
+\subsection{Theoretical Basis of Spearman Correlation}
+\label{subsec:spearman}
+
+The \textit{Spearman rank correlation coefficient} ($\rho$) measures the statistical dependence between two variables. Unlike the \textit{Pearson correlation coefficient} $r$, it does not assume linearity or a normal distribution. Instead, it evaluates whether the relationship between two variables is monotonic---that is, as one variable increases, the other consistently increases or decreases, though not necessarily at a constant rate. 
+
+$\rho$ works especially well for \textbf{ordinal categorical} variables and is robust to outliers, since it relies on ranks rather than raw values.
+
+Assuming a dataset with a sample size of $n$, $\rho$ is computed by ranking the values of each variable:
+
+$$\rho \in [-1, 1] = 1 - \frac{6 \times \text{sumsq}(R(X_i)-R(Y_i))}{n(n^2-1)}$$
+
+where:
+
+\begin{itemize}
+    \item $\text{sumsq}(\cdot)$: sum of squares of its elements.
+    \item $R(\cdot)$: the rank of a given variable value.
+    \item $X_i, Y_i$: the value of two variables $X$ and $Y$ of the $i^{th}$ observation.
+\end{itemize}
+
+The meaning of $\rho$ is as follows:
+
+\begin{itemize}
+    \item $\rho = 1$: perfect positive monotonic relationship (upward trend).
+    \item $\rho = -1$: perfect negative monotonic relationship (downward trend).
+    \item $\rho = 0$: no monotonic relationship (random fluctuations).
+\end{itemize}
+
+\subsection{Experiment Results}
+
+Our target variable of choice for this task is salary (USD), and we are going to compare it with four different feature variables: work year, remote ratio, experience level, and company size.
+
+Since both experience level and company size's data types are categorical strings, we need to encode them in the correct ordinal order.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/OrdinalEncode.png}
+    \caption{Ordinal encoding for categorical variables, showing the last five entries, with before and after comparison.}
+    \label{fig:ordinal-encode}
+\end{figure}
+
+We can begin calculating $\rho$ for each combinations of feature and target variables. For this, we use Python's \texttt{scipy.stats.spearmanr()}, which conveniently returns both $\rho$ and $p$ (the probability of seeing our observed statistic, as mentioned in Section~\ref{subsec:anova}). The results are then shown in Figure~\ref{fig:spearman}.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{Figures/Spearman.png}
+    \caption{$\rho$ and $p$ values from performing Spearman correlation analysis using \texttt{scipy.stats.spearmanr()}.}
+    \label{fig:spearman}
+\end{figure}
+
+All variables have $p < \alpha = 0.05$, meaning the observations we observe are statistically significant rather than random. In other words, each feature shows a meaningful monotonic relationship with salary instead of arising from noise in the data.
+
+Furthermore, experience level has the highest positive $\rho$, which means it has a plausible and stable upward trend with salary; meanwhile other variables have $\rho \approx 0$, corresponding unstable fluctuations, especially for remote work which matches our previous observations that hybrid work is significantly lower.
+
+\subsection{Plotting Visualizations}
+
+A correlation heatmap (Figure~\ref{fig:correlation-heatmap}) is useful to display all $\rho$ values of variable pairs in a single matrix.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/CorrHeatmap.png}
+    \caption{Correlation heatmap of $\rho$ between all variable pairs.}
+    \label{fig:correlation-heatmap}
+\end{figure}
+
+While our main goal is to examine the monotonic relationship with salary, it is worth noting that both remote ratio and work year show the highest negative $\rho$. This further supports our earlier explanations regarding the bias toward increased remote work in recent years.
+
+To better visualize monotonicity, we revisit the boxplots, this time adding regression lines to show trends or fluctuations (Figure~\ref{fig:boxplot-regression}).
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/BoxplotRegression.png}
+    \caption{Boxplots of all features against salary, with dashed regression lines representing trends and monotonicity.}
+    \label{fig:boxplot-regression}
+\end{figure}
+
+All boxplots match our observation that $p$ values are extremely small, indicating that the detected trends are meaningful rather than random noise.
+
+Key insights:
+
+\begin{enumerate}
+    \item Experience level shows a roughly linear upward trend, consistent with having the highest $\rho$ among the four variables tested.
+    \item The regression lines of both remote ratio and company size form a unique V shape, aligning with its $\rho$ being close to 0.
+    \item Work year also shows an upward trend, though not consistently.
+\end{enumerate}
+
+\subsection{Observations \& Conclusions}
+
+Our statistical results reflect practical real-world patterns: salary increases as employees gain more experience during their work, and companies generally prefer hiring more experienced employees for higher-responsibility roles, naturally resulting in higher pay; remote work has become increasingly relevant and serves as a flexible, viable working model; work year correlates with salary due to skill growth and inflation; and company size tends to scale with salary, but visualizations indicate that the change from M to L is downward.
+
+\textbf{Conclusion:} Our correlation analysis shows that salary has monotonic relationships with work year, and experience level, while remote ratio and company size show little to no monotonicity.

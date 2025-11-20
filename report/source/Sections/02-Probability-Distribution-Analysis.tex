@@ -1,0 +1,88 @@
+\section{Probability Distribution Analysis}
+
+In this task, we examine whether the key variable \textbf{salary (USD)} follows a known probability distribution. As noted in Section~\ref{subsubsec:data-types}, this variable has strong variability and extreme values, which makes distributional assessment essential.
+
+It is noting that we avoid removing outliers with MAD before this analysis, which will be explained in Section~\ref{subsec:log-transformation}.
+
+\subsection{Initial Observations}
+
+Recall from the previous descriptive analysis (Figure~\ref{fig:descriptive-statistics}), salaries exhibit a strong right skew, caused by a few extremely high values reaching up to 800,000 USD while the majority cluster near 150,000 USD.
+
+The skew is more evident when we re-examine the histogram and KDE (Figure~\ref{fig:salary-hist-kde}): the central mass roughly forms a bell curve, which is typical of a normal distribution, but the long, sparse right tail pulls the distribution away from symmetry. This combination of a bell-shaped core and heavy right tail is characteristic of variables that follow a \textbf{log-normal} distribution rather than a normal distribution.
+
+To further assess the skew, we use a Q--Q plot, which compares the quantiles of the observed salary data with those of a theoretical normal distribution:
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Figures/Q-QPlot.png}
+    \caption{Q--Q plot comparing salary quantiles to a theoretical normal distribution.}
+    \label{fig:q-q-plot}
+\end{figure}
+
+In the plot, the points curve upward rather than following the straight reference line, particularly in the right tail. This deviation confirms the presence of strong right skew and reinforces that the salary distribution is far from normal.
+
+\subsection{Normality Tests}
+
+To formally evaluate normality, two statistical tests are applied:
+
+\begin{enumerate}
+    \item \textit{Sharpio--Wik Test}: evaluates how closely the data follow a normal distribution by comparing the sample’s order statistics (the sorted data points) to those expected under normality. If the data deviate substantially from this pattern, the test produces a small $p$ value, which signals that the normality assumption should be rejected.
+    \item \textit{Kolmogorov--Smirnov Test}: compares the empirical cumulative distribution function (ECDF) of the data, which shows the proportion of values below each point, with the theoretical CDF of a normal distribution. A large maximum difference (D statistic) leads to a small $p$ value, indicating that the data are unlikely to be normally distributed.
+\end{enumerate}
+
+The $p$ values from both tests are shown in Figure~\ref{fig:normality-tests}.
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\linewidth]{Figures/NormalityTests.png}
+\caption{$p$ values from the Shapiro--Wilk and Kolmogorov--Smirnov tests for salary normality. Values near 0 indicate strong rejection of the normality assumption.}
+\label{fig:normality-tests}
+\end{figure}
+
+All $p$ values are extremely small, confirming that the salary distribution deviates significantly from normality and that the normality hypothesis should be rejected.
+
+\subsection{Log-transformation}
+\label{subsec:log-transformation}
+
+To reduce skewness, we apply the natural logarithm transformation:
+
+$$\text{salary'} = \ln(\text{salary})$$
+
+After transformation, the histogram of $\ln(\text{salary})$ becomes approximately symmetric, and the Q--Q plot aligns much more closely with the theoretical normal line. The spread of salaries also becomes more consistent across the distribution.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/LogTransformedPlots.png}
+    \caption{Histogram and Q–Q plot of log-transformed salary values.}
+    \label{fig:hist-q-q-log-transformed}
+\end{figure}
+
+A crucial observation is that if outliers are removed before the log-transformation, the distribution becomes left-skewed. Therefore, log-transforming must be performed prior to MAD outlier removal to maintain approximate symmetry.
+
+% To reduce the skew, we apply a log-transformation to all salary values by calculating the natural log value $\ln(\text{salary})$. The resulting new histogram distribution is approximately symmetric---both sides divided from the median show a roughly similar curve. The new data points in Q--Q plot also aligns better with the theoretical normal line.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=1\linewidth]{Figures/LogTransformedPlots.png}
+%     \caption{Enter Caption}
+%     \label{fig:placeholder}
+% \end{figure}
+
+% Thus we conclude that salary follows a special form of normal distribution called a \textbf{log-normal distribution}, where the shape resembles a typical bell curve of a normal histogram but there is a significant amount of skew present.
+
+% However, if we clean the outliers before apply log-transformation, the resulting distribution is instead left-skewed, meaning there is now a left tail of low-salary values, instead we need to apply the log-transformation before removing outliers with MAD to retain the symmetry.
+
+\subsection{Conclusion}
+
+All analyses, visual inspection, statistical testing, and log-transformation indicate that salary follows a log-normal distribution rather than a normal distribution. The raw data shows strong right skew due to high-salary outliers, while the log-transformed data is approximately symmetric and closely aligns with a theoretical normal distribution.
+
+Practical implications:
+
+\begin{enumerate}
+    \item Use median and IQR instead of mean and standard deviation for descriptive summaries.
+    \item Log-transform salary values before modeling to improve residual behavior and support parametric analyses.
+    \item Apply non-parametric tests on the original scale, unless log-transformed values are used.
+    \item Remove outliers after log-transformation to preserve symmetry and avoid artificial skew.
+\end{enumerate}
+
+Recognizing the log-normal nature of salary ensures more accurate modeling, robust statistical inference, and meaningful descriptive analysis.

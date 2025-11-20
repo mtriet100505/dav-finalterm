@@ -1,0 +1,69 @@
+\section{Multiple Linear Regression}
+
+In this task, we aim to understand how multiple factors together influence salary. \textit{Multiple Linear Regression} (MLR) models the relationship between a continuous target variable (salary) and several input features simultaneously, allowing us to quantify feature effects, make predictions, and understand multivariate relationships.
+
+\section{Theoretical Basis}
+
+MLR is an extended version of \textit{Linear Regression} used to predict a continuous target variable $y$ for multiple input features $X_1, X_2, \dots, X_p$. It provides a way to quantify the effect of each feature on the target while controlling for the others; make predictions on new, unseen data; and understand complex relationships in multivariate datasets.
+
+The MLR model can be written as:
+
+$$y^i = \beta_0 + X^i_1\beta_1 + X^i_2\beta_2 + \dots + X^i_p\beta_p + \epsilon^i$$
+
+where:
+
+\begin{itemize}
+    \item $X^i, y^i$: independent (features) and dependent (target) variables at the $i^{th}$ observation.
+    \item $\beta$: regression coefficients (parameters).
+    \item $\beta_0$: intercept (bias).
+    \item $\epsilon^i$: random error term.
+\end{itemize}
+
+The goal of MLR is to find $\beta_0, \beta_1, \dots, \beta_p$ that minimizes the mean squared error (MSE) (\textit{i.e.}, fitting the model):
+
+$$\hat\beta = \arg\min_\beta \frac1n \|y - \hat{y}\|_2^2$$
+
+where:
+
+\begin{itemize}
+    \item $y_i$: ground truth.
+    \item $\hat{y_i}$: model prediction.
+\end{itemize}
+
+Once finished, we can evaluate its performance using various metrics:
+
+\begin{enumerate}
+    \item Mean Absolute Error (MAE): $\text{MAE} = \frac1n \|y - \hat{y}\|$
+    \item Mean Squared Error (MSE): $\text{MSE} = \frac1n \|y - \hat{y}\|_2^2$
+    \item Coefficient of Determination ($R^2$): $R^2 = 1 - \frac{\|y - \hat{y}\|_2^2}{\|y - \bar{y}\|_2^2}$
+\end{enumerate}
+
+However, for MLR to be viable when predicting, a few assumptions are required: 1) the relationship between features and the target is roughly linear; 2) observations are independent; 3) the variance of errors is constant; 4) $\epsilon_i$ are approximately normally distributed; 5) features are not highly correlated with each other.
+
+\subsection{Experiment Results}
+
+Before fitting an MLR model, we need to preprocess our data to ensure that all variables contribute to the final prediction and that discrepancies like outliers and duplicates will not affect the performance negatively:
+
+\begin{enumerate}[leftmargin=4em, label=Step \arabic*:]
+    \item Drop redundant columns (\texttt{salary, salary\_currency}), only \texttt{salary\_in\_usd} is needed.
+    \item Remove duplicates with \texttt{df.drop\_duplicates()} and outliers using MAD.
+    \item Ordinal encode experience level and company size.
+    \item Create $X$ and $y$ for features and target variables, and log transform $y$ to reduce right skew.
+    \item Apply one-hot encoding to nominal categorical features.
+    \item Split $X$ and $y$ into train and validation sets.
+\end{enumerate}
+
+Finally, we fit \texttt{scikit\allowbreak -learn}'s \texttt{Linear\allowbreak Regression} model and evaluate the performance:
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Figures/LinearRegressionEval.png}
+    \caption{MAE, MSE and $R^2$ scores of \texttt{LinearRegression} after fitting with preprocessed data.}
+    \label{fig:linear-regression-evaluation}
+\end{figure}
+
+From Figure~\ref{fig:linear-regression-evaluation}, we notice that our model is under-performing, indicated by a low $R^2$ score. This makes sense, as many features do not have a linear relationship with salary, as seen with Figure~\ref{fig:boxplot-regression}. Still, the model is able to capture meaningful patterns rather than memorizing noise in the dataset.
+
+\subsection{Conclusion}
+
+All in all, we showed that a simple MLR can capture meaningful relationships between features and salary, though performance is limited due to non-linear dependencies. Future improvements could include removing highly correlated features or applying non-linear models such as deep learning / neural networks to better capture complex patterns.
